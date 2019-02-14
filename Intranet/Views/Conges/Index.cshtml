@@ -1,0 +1,57 @@
+﻿@model IntranetPOPS1819.ViewModel.CongesViewModel
+@{
+    ViewBag.Title = "Profil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    @Html.Partial("../Shared/Navbar")
+    @using (Html.BeginForm())
+    {
+        <div>
+            @Html.LabelFor(Model => Model._Conge.Debut)
+            @Html.EditorFor(Model => Model._Conge.Debut, new { @class = "form-control" })
+            @Html.ValidationMessageFor(Model => Model._Conge.Debut)
+        </div>
+        <div>
+            @Html.LabelFor(Model => Model._Conge.Fin)
+            @Html.EditorFor(Model => Model._Conge.Fin, new { @class = "form-control" })
+            @Html.ValidationMessageFor(Model => Model._Conge.Fin)
+        </div>
+        <div>
+            @Html.LabelFor(Model => Model._Conge.Type)
+            @Html.TextBoxFor(Model => Model._Conge.Type)
+            @Html.ValidationMessageFor(Model => Model._Conge.Type)
+        </div>
+        <input type="submit" value="Demnader congé" />
+    }
+    <p>Liste des demandes : </p>
+    @if (Model._Collaborateur.Conges.Count > 0)
+    {
+        foreach (var c in Model._Collaborateur.Conges)
+        {
+            <ul>
+                <li>Du @c.Debut au @c.Fin - @c.Type - @c.Statut</li>
+            </ul>
+        }
+    }
+    else
+    {
+        <p>Aucune demande pour le moment</p>
+    }
+
+    <div id="content"></div>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/16.4.0/umd/react.development.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.min.js"></script>
+    <script src="@Url.Content("~/Scripts/Calendrier.jsx")"></script>
+
+</body>
+</html>
