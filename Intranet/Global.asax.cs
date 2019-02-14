@@ -7,6 +7,8 @@ using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.Http;
+using System.Data.Entity;
+using IntranetPOPS1819.Models;
 
 namespace Intranet
 {
@@ -14,10 +16,15 @@ namespace Intranet
     {
         void Application_Start(object sender, EventArgs e)
         {
-            // Code qui s’exécute au démarrage de l’application
-            AreaRegistration.RegisterAllAreas();
-            GlobalConfiguration.Configure(WebApiConfig.Register);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);            
-        }
+			AreaRegistration.RegisterAllAreas();
+			RouteConfig.RegisterRoutes(RouteTable.Routes);
+			//BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+			IDatabaseInitializer<BddContext> init = new DropCreateDatabaseAlways<BddContext>();
+			Database.SetInitializer(init);
+			init.InitializeDatabase(new BddContext());
+			Dal d = new Dal();
+			d.InitializeBdd();
+		}
     }
 }
