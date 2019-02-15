@@ -1,11 +1,12 @@
-﻿using IntranetPOPS1819.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
 using System.Data.Entity;
+using IntranetPOPS1819.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace IntranetTests.Tests
 {
     [TestClass]
-    public class CongesTest
+    public class UnitTest1
     {
         private IDal dal;
 
@@ -25,15 +26,15 @@ namespace IntranetTests.Tests
         {
             dal.Dispose();
         }
-        
+
         [TestMethod]
-        public void TestValidationFinale_OK()
+        public void CreerService_CreerMissionAvecService_MissionPresentDansService()
         {
-            Conge c = new Conge { Debut = new System.DateTime(2019, 2, 15), Fin = new System.DateTime(2019, 2, 17), Type = TypeConge.RTT };
-            dal.AjoutConge(1, c);
-            dal.ValiderConge(1, dal.ObtenirCollaborateur(1).Conges[0].Id);
-            Assert.AreEqual(dal.ObtenirCollaborateur(1).Conges[0].Statut, StatutConge.Valide);
-            Assert.AreEqual(dal.ObtenirCollaborateur(1).CongesRestants, 10);
+            Service s = dal.AjoutService("Comptabilité");
+            Mission m = dal.AjoutMission("ProjetGL", s.Id);
+
+            Assert.AreEqual(s.Missions[0], m);
+            Assert.AreEqual(s, m.Service);
         }
     }
 }
