@@ -22,12 +22,13 @@ namespace IntranetPOPS1819.Models
 		public string MotDePasse { get; set; }
 		public string Nom { get; set; }
         public string Prenom { get; set; }
-		public int CongésRestants { get; set; } = 0;
+		public int CongesRestants { get; set; } = 0;
 		//Garder ? TODO
 		public bool Admin { get; set; } = false;
         public bool Chef { get; set; } = false;
         [RegularExpression(@"^0[0-9]{9}$")]
 		public string Telephone { get; set; }
+        public bool EstPresent { get; set; }
 
 		public virtual List<Mission> Missions { get; set; } = new List<Mission>();
 		public virtual List<Conge> Conges { get; set; } = new List<Conge>();

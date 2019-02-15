@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Web;
-
+﻿
 namespace IntranetPOPS1819.Models
 {
     public class Mission

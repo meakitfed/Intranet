@@ -105,9 +105,9 @@ namespace IntranetPOPS1819.Models
             {
                 Collaborateur nathan = new Collaborateur { Mail = "nathan.bonnard@u-psud.fr", Nom = "bonnard", Prenom = "nathan", MotDePasse = EncodeMD5("mdp") };
                 nathan.LastUpdate = new DateTime(2018, 1, 1);
-                Collaborateur brian = new Collaborateur { Mail = "admin@gmail.com", Nom = "Martin", Prenom = "Brian", MotDePasse = EncodeMD5("admin"), Admin = true };
+                Collaborateur brian = new Collaborateur { Mail = "admin@gmail.com", Nom = "Martin", Prenom = "Brian", MotDePasse = EncodeMD5("admin"), Admin = true, CongesRestants = 12 };
                 brian.LastUpdate = new DateTime(2017, 1, 1);
-                Collaborateur didier = new Collaborateur { Mail = "didier@gmail.com", Nom = "Degroote", Prenom = "Didier", MotDePasse = EncodeMD5("dede"), Chef = true };
+                Collaborateur didier = new Collaborateur { Mail = "didier@gmail.com", Nom = "Degroote", Prenom = "Didier", MotDePasse = EncodeMD5("dede"), Chef = true, CongesRestants = 12 };
                 Collaborateur isabelle = new Collaborateur { Mail = "isabelle@gmail.com", Nom = "Soun", Prenom = "Isabelle", MotDePasse = EncodeMD5("isa"), Chef = true };
 
                 Service compta = new Service { Nom = "Comptabilité", Collaborateurs = { didier }, Type = TypeService.Comptabilité };
@@ -134,7 +134,6 @@ namespace IntranetPOPS1819.Models
 					isabelle
 				};
 
-
                 Random r = new Random();
                 List<Mission> Missions = new List<Mission>();
                 string[] labelsMission = { "Chantier Paris", "Parking Velizy", "Publicité", "Démarchage" };
@@ -143,8 +142,6 @@ namespace IntranetPOPS1819.Models
                     int rand = r.Next(0, labelsMission.Length);
                     Missions.Add(new Mission { Nom = labelsMission[rand], Service = compta, Statut = StatutMission.EnCours });
                 }
-
-                
 
                 foreach (Mission m in Missions)
                 {
@@ -271,9 +268,14 @@ namespace IntranetPOPS1819.Models
 			return s;
 		}
 
-        public void ChangerStatutConge(int id, StatutConge s)
+        public void ChangerStatut(int id, StatutConge s)
         {
             bdd.Conges.FirstOrDefault(u => u.Id == id).Statut = s;
+        }
+
+        public void ChangerStatut(int id, StatutMission s)
+        {
+            bdd.Missions.FirstOrDefault(m => m.Id == id).Statut = s;
         }
 
 		public Mission AjoutMission(string nom, int serviceId)
@@ -306,14 +308,36 @@ namespace IntranetPOPS1819.Models
 			bdd.SaveChanges();
 		}
 
-		public Collaborateur ObtenirCollaborateur(string idString)
+        public void AssignerMission(int idMission, int idCollaborateur)
+        {
+            Mission m = bdd.Missions.FirstOrDefault(miss => miss.Id == idMission);
+            Collaborateur c = bdd.Collaborateurs.FirstOrDefault(collab => collab.Id == idCollaborateur);
+            c.Missions.Add(m);
+            bdd.SaveChanges();
+        }
+
+        public Collaborateur ObtenirCollaborateur(string idString)
 		{
             if (int.TryParse(idString, out int id))
                 return ObtenirCollaborateur(id);
             return null;
 		}
 
-		public Collaborateur Authentifier(string mail, string motDePasse)
+        public void ValiderConge(int idCollab, int idConge)
+        {
+            Conge conge = bdd.Collaborateurs.First(col => col.Id == idCollab).Conges.FirstOrDefault(con => con.Id == idConge);
+            ChangerStatut(conge.Id, StatutConge.Valide);
+            int duree = (conge.Fin - conge.Debut).Days;
+            ModifierCongesRestant(idCollab, duree);
+            bdd.SaveChanges();
+        }
+
+        public void ModifierCongesRestant(int id, int jours)
+        {
+            bdd.Collaborateurs.First(c => c.Id == id).CongesRestants -= jours;
+        }
+
+        public Collaborateur Authentifier(string mail, string motDePasse)
 		{
 			string motDePasseEncode = EncodeMD5(motDePasse);
 			return bdd.Collaborateurs.FirstOrDefault(u => u.Mail == mail && u.MotDePasse == motDePasseEncode);
@@ -324,5 +348,6 @@ namespace IntranetPOPS1819.Models
 			string motDePasseSel = "Encodage123" + motDePasse + "IntranetPOPS";
 			return BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(ASCIIEncoding.Default.GetBytes(motDePasseSel)));
 		}
-	}
+        
+    }
 }

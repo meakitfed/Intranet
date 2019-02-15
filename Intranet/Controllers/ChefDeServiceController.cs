@@ -58,9 +58,10 @@ namespace IntranetPOPS1819.Controllers
 			return true;
 		}
 
+        // TODO : Envoyer le congé aux RH
         public void ValiderConges(int idConge)
         {
-            dal.ChangerStatutConge(idConge, StatutConge.Valide);
+            //dal.ChangerStatut(idConge, StatutConge.Valide);
         }
 	}
 }
